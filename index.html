@@ -290,7 +290,7 @@
     <div class="topbar">
       <div>
         <div class="title" id="center-title">Acontecendo agora</div>
-        <div class="subtitle" id="center-subtitle">Feed — MINIX (demo)</div>
+        <div class="subtitle"id="center-subtitle">Feed — MINIX (demo)</div>
       </div>
     </div>
 
@@ -344,26 +344,44 @@
   function save(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
 
   let state = load();
+
+  // =======================================================
+  // CORREÇÃO: Bloco de inicialização
+  // O erro estava aqui. O código tentava acessar 'state.posts'
+  // enquanto o objeto 'state' ainda estava sendo criado,
+  // causando um 'TypeError' que parava todo o script.
+  // =======================================================
   if(!state){
     const id = uid(6);
     const id2 = uid(6);
+
+    // 1. Crie o estado primeiro, com posts vazios
     state = {
       users: {
         [id]: { id, name:'Odiko Demo', email:'demo@minix.test', handle:'odiko', bio:'Bem-vindo ao MINIX demo', passHash: simpleHash('demo123'), avatar:null, banner:null, createdAt: now() },
         [id2]: { id: id2, name:'Usuário Teste', email:'teste@minix.test', handle:'teste', bio:'Eu sou um usuário de teste para a função "seguir".', passHash: simpleHash('demo123'), avatar:null, banner:null, createdAt: now() }
       },
       sessions: {}, // token->userId
-      posts: [
-        { id: uid(6), userId:id, text:'Olá MINIX — post demo com imagem. Teste anexos, editar e repost!', createdAt: now(), editedAt:null, likes:[], reposts:[], attachments:[], replyTo:null, quotePostId: null },
-        { id: uid(6), userId:id2, text:'Este é um post de outro usuário, para que você possa clicar no meu perfil e me seguir.', createdAt: now(), editedAt:null, likes:[], reposts:[], attachments:[], replyTo:null, quotePostId: null },
-        { id: uid(6), userId:id, text:'Este é um comentário e não deve aparecer no feed principal.', createdAt: now(), editedAt:null, likes:[], reposts:[], attachments:[], replyTo: state.posts ? state.posts[1].id : null, quotePostId: null },
-      ],
+      posts: [], // Começa vazio
       follows: { [id]: [id2] }, // userId -> [followingIds]
       messages: [],
       notifications: []
     };
+
+    // 2. Crie os posts separadamente
+    const post1 = { id: uid(6), userId:id, text:'Olá MINIX — post demo com imagem. Teste anexos, editar e repost!', createdAt: now(), editedAt:null, likes:[], reposts:[], attachments:[], replyTo:null, quotePostId: null };
+    const post2 = { id: uid(6), userId:id2, text:'Este é um post de outro usuário, para que você possa clicar no meu perfil e me seguir.', createdAt: now(), editedAt:null, likes:[], reposts:[], attachments:[], replyTo:null, quotePostId: null };
+    // 3. Crie a resposta referenciando o ID do post2
+    const post3 = { id: uid(6), userId:id, text:'Este é um comentário e não deve aparecer no feed principal.', createdAt: now(), editedAt:null, likes:[], reposts:[], attachments:[], replyTo: post2.id, quotePostId: null };
+
+    // 4. Adicione os posts ao estado
+    state.posts = [post1, post2, post3];
+
     save(state);
   }
+  // =======================================================
+  // FIM DA CORREÇÃO
+  // =======================================================
 
   let session = null; // {token, userId}
   function simpleHash(s){ let h=0; for(let i=0;i<s.length;i++){ h=(h<<5)-h + s.charCodeAt(i); h |= 0 } return h.toString(36) }
