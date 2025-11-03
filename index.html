@@ -1,0 +1,1418 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MINIX — Demo (Responsivo, Tema Escuro)</title>
+  <link rel="icon" href="data:,">
+  <style>
+    /* ===== Root / Theme ===== */
+    :root{
+      --bg: #070708;
+      --panel: #0f1113;
+      --surface: #0c0d0e;
+      --muted: #98a0a6;
+      --text: #e6eef3;
+      --accent: #1ea6ff; /* destaque: azul */
+      --accent-2: #1483c9;
+      --glass: rgba(255,255,255,0.03);
+      --success: #2ecc71;
+      --danger: #ff6b6b; /* Cor para deletar */
+      --radius: 14px;
+      --big: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, "Segoe UI", Roboto, Arial; background:linear-gradient(180deg,var(--bg),#060607); color:var(--text); -webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none}
+    button{font-family:inherit}
+
+    /* ===== Layout ===== */
+    .app{
+      display:grid;
+      grid-template-columns:280px 1fr 360px;
+      gap:20px;
+      padding:22px;
+      min-height:100vh;
+      align-items:start;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      position:sticky; top:20px;
+      padding:18px;
+      border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      height:calc(100vh - 44px);
+      display:flex; flex-direction:column; gap:14px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+    }
+    .brand{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:800}
+    .logo{
+      width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,#fff 0%, #e6e6e6 60%);
+      color:#050506;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;
+    }
+    .nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+    .nav button{
+      background:transparent;border:0;color:var(--muted);text-align:left;padding:12px;border-radius:12px;display:flex;gap:12px;align-items:center;cursor:pointer;font-size:16px;
+      transition:all .18s ease;
+    }
+    .nav button:hover{background:var(--glass); color:var(--text); transform:translateX(6px);}
+    .nav .active{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#001; font-weight:700; box-shadow:0 8px 30px rgba(22,140,210,0.12)}
+    .post-btn{
+      margin-top:auto;padding:14px;border-radius:999px;border:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#001; font-weight:800; cursor:pointer; font-size:16px;
+      box-shadow:0 12px 30px rgba(22,140,210,0.12); transition:transform .15s ease;
+    }
+    .post-btn:active{transform:translateY(2px) scale(.995)}
+
+    /* CENTER */
+    .center { max-width:900px; margin:0 auto; width:100%}
+    .topbar{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+    .title{font-size:30px;font-weight:900;letter-spacing:-0.02em}
+    .subtitle{color:var(--muted);margin-left:8px;font-size:15px}
+
+    /* Composer */
+    .composer{display:flex;gap:14px;padding:16px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,0.5)}
+    .composer .avatar{width:64px;height:64px;border-radius:999px;background:#111;flex-shrink:0}
+    .composer .area{flex:1;display:flex;flex-direction:column;gap:12px}
+    .composer textarea{width:100%;min-height:96px;background:transparent;border:1px solid rgba(255,255,255,0.04);padding:14px;border-radius:12px;color:var(--text);font-size:16px;resize:vertical;outline:none}
+    .composer .controls{display:flex;align-items:center;justify-content:space-between}
+    .controls .left{display:flex;gap:8px;align-items:center}
+    .icon-btn{display:inline-flex;align-items:center;gap:8px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);cursor:pointer;font-size:15px;transition:all .12s}
+    .icon-btn:hover{transform:translateY(-4px); color:var(--text); border-color: rgba(255,255,255,0.06)}
+    .file-preview{display:flex;gap:8px;flex-wrap:wrap}
+    .file-chip{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);font-size:14px}
+    .send-btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:0;padding:10px 16px;border-radius:999px;color:#001;font-weight:800;cursor:pointer;box-shadow:0 12px 30px rgba(22,140,210,0.12)}
+    .send-btn:disabled{opacity:.5;cursor:not-allowed}
+
+    /* Posts */
+    .posts{margin-top:18px;display:flex;flex-direction:column;gap:12px}
+    .post{background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);padding:14px;border-radius:14px;display:flex;gap:12px;align-items:flex-start;transition:transform .12s, box-shadow .12s; cursor:pointer;}
+    .post:hover{transform:translateY(-6px); box-shadow:0 16px 40px rgba(0,0,0,0.6)}
+    .post .avatar{width:64px;height:64px;border-radius:999px;background:#111;flex-shrink:0}
+    .post .body{flex:1}
+    .post .meta{display:flex;align-items:center;gap:8px}
+    .post .name{font-weight:800;font-size:16px}
+    .post .handle{color:var(--muted);font-size:14px}
+    .post .text{margin-top:8px;font-size:16px;line-height:1.4;white-space:pre-wrap}
+    .post .attachments{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap}
+    .img-thumb{max-width:320px;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+    .img-thumb img{display:block;max-width:100%;height:auto}
+    .post .actions{display:flex;gap:8px;margin-top:12px; flex-wrap: wrap;}
+    .action-btn{background:transparent;border:1px solid rgba(255,255,255,0.03);padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer;display:inline-flex;gap:10px;align-items:center;transition:all .12s}
+    .action-btn:hover{transform:translateY(-4px); color:var(--text); border-color: rgba(255,255,255,0.06)}
+
+    .count{font-weight:700;color:var(--accent)}
+
+    /* Post edit badge */
+    .edited{font-size:12px;color:var(--muted);margin-left:8px}
+
+    /* Widgets (right) */
+    .right .widget{padding:16px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);margin-bottom:14px}
+    .widget h4{margin:0 0 10px 0;color:#cfe5ff}
+    .widget .muted{color:var(--muted)}
+
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:100}
+    .modal{width:880px;max-width:96%;background:linear-gradient(180deg,#09090a,#0b0b0c);padding:20px;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
+    .modal .close{position:absolute;right:20px;top:18px;background:transparent;border:0;color:var(--muted);cursor:pointer;padding:8px;border-radius:8px}
+
+    /* Responsive */
+    @media (max-width:1100px){
+      .app{grid-template-columns:1fr; padding:12px}
+      .sidebar{display:none}
+      .right{display:none}
+      .center{max-width:100%}
+    }
+
+    /* Accessibility helpers larger sizes */
+    h1,h2,h3{line-height:1.05}
+    input,textarea,button{font-size:16px}
+
+    /* ===== NOVOS ESTILOS (Melhorias 1ª Rodada) ===== */
+
+    /* 1. Melhora o contraste do textarea */
+    .composer textarea {
+      color: var(--text);
+    }
+
+    /* 2. Deixa a barra de busca arredondada e mais bonita */
+    .widget input[placeholder^="Procure por"] {
+      background: var(--surface);
+      border: 1px solid var(--panel);
+      border-radius: 999px; /* Borda redonda */
+      padding: 10px 16px;
+      color: var(--text);
+      font-size: 15px;
+    }
+    .widget input[placeholder^="Procure por"]:focus {
+      outline: 2px solid var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* 3. Estilos para o novo layout de Perfil (veja seção 2) */
+    .profile-header {}
+    .profile-banner {
+      height: 220px;
+      background-color: #334; /* Cor de fallback */
+      background-size: cover;
+      background-position: center;
+      border-radius: 12px;
+    }
+    .profile-avatar-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: -64px; /* Puxa o avatar para cima */
+      padding: 0 16px;
+    }
+    .profile-avatar {
+      width: 128px;
+      height: 128px;
+      border-radius: 999px;
+      background-color: #111;
+      border: 4px solid var(--bg); /* Borda da cor do fundo */
+      background-size: cover;
+      background-position: center;
+    }
+    .profile-info {
+      padding: 16px;
+    }
+    .profile-stats {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      color: var(--muted);
+    }
+    .profile-stats strong {
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    /* 4. Estilos para o Repost (Quote Tweet) (veja seção 5) */
+    .quoted-post {
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .quoted-post .meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .quoted-post .avatar-small {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: #222;
+      background-size: cover;
+      background-position: center;
+    }
+    .quoted-post .text {
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    /* ===== NOVOS ESTILOS (Melhorias 2ª Rodada) ===== */
+
+    /* 1. Inputs de Modal (Login, Mensagem) com texto branco */
+    .modal input,
+    .modal textarea {
+      color: var(--text) !important; /* Garante texto branco */
+      background: var(--panel) !important; /* Fundo escuro */
+      border: 1px solid rgba(255,255,255,0.1) !important;
+      padding: 12px 14px !important;
+      border-radius: 10px !important;
+      width: 100%;
+      margin-bottom: 8px;
+    }
+    .modal input:focus,
+    .modal textarea:focus {
+      outline: 1px solid var(--accent) !important;
+      border-color: var(--accent) !important;
+    }
+    .modal .send-btn {
+      background: var(--accent); /* Botão azul do twitter */
+    }
+
+    /* 2. Links clicáveis para perfil */
+    .post .name,
+    .post .avatar {
+      cursor: pointer;
+      z-index: 2; /* Fica acima do listener do post */
+      position: relative;
+    }
+    .post .name:hover {
+      text-decoration: underline;
+    }
+    .post .action-btn {
+      z-index: 2;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <div class="left">
+    <div class="sidebar" id="sidebar">
+      <div class="brand"><div class="logo">X</div> MINIX</div>
+      <div class="nav" id="nav">
+        <button data-screen="home" class="active">Página Inicial</button>
+        <button data-screen="explore">Explorar</button>
+        <button data-screen="notifications">Notificações <span id="notif-pill" style="margin-left:8px;background:rgba(255,255,255,0.03);padding:4px 8px;border-radius:999px;font-size:13px;display:none">0</span></button>
+        <button data-screen="messages">Mensagens</button>
+        <button data-screen="profile">Perfil</button>
+        <button data-screen="settings">Configurações</button>
+      </div>
+
+      <button id="open-compose" class="post-btn">Novo Post</button>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-top:10px">
+        <div id="mini-avatar" style="width:64px;height:64px;border-radius:999px;background:#111"></div>
+        <div style="flex:1">
+          <div id="mini-name" style="font-weight:800">Visitante</div>
+          <div id="mini-handle" class="muted">@visitante</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button id="btn-login" class="icon-btn" style="padding:10px 12px">Entrar</button>
+          <button id="btn-logout" class="icon-btn" style="display:none;padding:10px 12px">Sair</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="center">
+    <div class="topbar">
+      <div>
+        <div class="title" id="center-title">Acontecendo agora</div>
+        <div class="subtitle" id="center-subtitle">Feed — MINIX (demo)</div>
+      </div>
+    </div>
+
+    <div id="main-content">
+    </div>
+  </div>
+
+  <div class="right">
+    <div style="position:sticky;top:20px">
+      <div class="widget">
+        <h4>Buscar</h4>
+        <input id="search-box" placeholder="Procure por @handle ou texto..." style="width:100%;margin-top:8px" />
+      </div>
+
+      <div class="widget">
+        <h4>O que está acontecendo</h4>
+        <div class="muted" style="margin-top:8px">Tópicos e tendências simuladas.</div>
+      </div>
+
+      <div class="widget" id="who-to-follow">
+        <h4>Siga</h4>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+
+<script>
+  /* =========================
+    MINIX - single-file app
+    Feature highlights:
+    - responsive, dark theme, larger UI
+    - attach files (images/videos/other)
+    - edit post
+    - delete post (NOVO)
+    - repost with or without comment (estilo quote-tweet)
+    - profile photo + banner (estilo X)
+    - follow/unfollow logic (NOVO)
+    - view other profiles (NOVO)
+    - main feed hides replies (NOVO)
+    - localStorage persistence
+    ========================= */
+
+  const STORAGE_KEY = 'minix_demo_v2';
+  const uid = (n=8)=>Math.random().toString(36).slice(2,2+n);
+  const now = ()=> new Date().toISOString();
+
+  function load(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || null } catch(e){ return null } }
+  function save(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+  let state = load();
+  if(!state){
+    const id = uid(6);
+    const id2 = uid(6);
+    state = {
+      users: {
+        [id]: { id, name:'Odiko Demo', email:'demo@minix.test', handle:'odiko', bio:'Bem-vindo ao MINIX demo', passHash: simpleHash('demo123'), avatar:null, banner:null, createdAt: now() },
+        [id2]: { id: id2, name:'Usuário Teste', email:'teste@minix.test', handle:'teste', bio:'Eu sou um usuário de teste para a função "seguir".', passHash: simpleHash('demo123'), avatar:null, banner:null, createdAt: now() }
+      },
+      sessions: {}, // token->userId
+      posts: [
+        { id: uid(6), userId:id, text:'Olá MINIX — post demo com imagem. Teste anexos, editar e repost!', createdAt: now(), editedAt:null, likes:[], reposts:[], attachments:[], replyTo:null, quotePostId: null },
+        { id: uid(6), userId:id2, text:'Este é um post de outro usuário, para que você possa clicar no meu perfil e me seguir.', createdAt: now(), editedAt:null, likes:[], reposts:[], attachments:[], replyTo:null, quotePostId: null },
+        { id: uid(6), userId:id, text:'Este é um comentário e não deve aparecer no feed principal.', createdAt: now(), editedAt:null, likes:[], reposts:[], attachments:[], replyTo: state.posts ? state.posts[1].id : null, quotePostId: null },
+      ],
+      follows: { [id]: [id2] }, // userId -> [followingIds]
+      messages: [],
+      notifications: []
+    };
+    save(state);
+  }
+
+  let session = null; // {token, userId}
+  function simpleHash(s){ let h=0; for(let i=0;i<s.length;i++){ h=(h<<5)-h + s.charCodeAt(i); h |= 0 } return h.toString(36) }
+
+  /* ===== Helpers ===== */
+  function el(q, p=document){ return p.querySelector(q) }
+  function qA(q,p=document){ return Array.from(p.querySelectorAll(q)) }
+  function timeAgo(iso){ const diff = Date.now() - new Date(iso).getTime(); const s=Math.floor(diff/1000); if(s<60) return s+'s'; const m=Math.floor(s/60); if(m<60) return m+'m'; const h=Math.floor(m/60); if(h<24) return h+'h'; const d=Math.floor(h/24); return d+'d' }
+  function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function toast(msg, t=2200){ const d=document.createElement('div'); d.textContent=msg; d.style.position='fixed'; d.style.right='18px'; d.style.bottom='18px'; d.style.background='rgba(255,255,255,0.04)'; d.style.padding='10px 14px'; d.style.borderRadius='10px'; d.style.zIndex=9999; document.body.appendChild(d); setTimeout(()=>d.style.opacity='0', t-300); setTimeout(()=>d.remove(), t) }
+
+  /* ===== Auth / Users ===== */
+  function currentUser(){ if(!session) return null; return state.users[session.userId] || null }
+
+  function setSession(token, userId){
+    session = { token, userId };
+    state.sessions[token]=userId; save(state);
+    renderSidebarUser();
+    route('home');
+  }
+  function clearSession(){ if(session){ delete state.sessions[session.token]; session = null; save(state); } renderSidebarUser(); route('login') }
+
+  function loginWith(handle, password){
+    const user = Object.values(state.users).find(u=>u.handle===handle || u.email===handle);
+    if(!user) return { ok:false, msg:'Usuário não encontrado' };
+    if(user.passHash !== simpleHash(password)) return { ok:false, msg:'Senha incorreta' };
+    const token = uid(12);
+    setSession(token, user.id);
+    return { ok:true, user };
+  }
+  function signup(data){
+    if(Object.values(state.users).find(u=>u.handle===data.handle)) return { ok:false, msg:'Handle já em uso' };
+    if(Object.values(state.users).find(u=>u.email===data.email)) return { ok:false, msg:'E-mail já cadastrado' };
+    const id = uid(6);
+    state.users[id] = { id, name:data.name, email:data.email, handle:data.handle, bio:data.bio||'', passHash:simpleHash(data.pass), avatar:null, banner:null, createdAt:now() };
+    state.follows[id] = [];
+    save(state);
+    const token = uid(12);
+    setSession(token, id);
+    return { ok:true, user: state.users[id] };
+  }
+
+  /* ===== NOVAS FUNÇÕES: Seguir e Contagem ===== */
+  function toggleFollow(targetUserId) {
+    const me = currentUser();
+    if (!me) { openLoginModal(); return; }
+    if (me.id === targetUserId) { toast('Você não pode seguir a si mesmo'); return; }
+
+    const followingList = state.follows[me.id] || [];
+    const idx = followingList.indexOf(targetUserId);
+
+    if (idx === -1) {
+      followingList.push(targetUserId);
+      toast(`Seguindo ${state.users[targetUserId].name}`);
+      state.notifications.push({ id:uid(8), userId: targetUserId, type:'follow', payload:{by:me.id}, createdAt:now(), read:false });
+    } else {
+      followingList.splice(idx, 1);
+      toast(`Deixou de seguir ${state.users[targetUserId].name}`);
+    }
+    state.follows[me.id] = followingList;
+    save(state);
+
+    // Atualiza a visualização
+    renderSidebarWidgets();
+    // Se estivermos no perfil, re-renderiza para atualizar o botão
+    if(el('.profile-header')) {
+      const currentProfileId = el('.profile-info').dataset.userid;
+      if(currentProfileId === targetUserId) {
+        renderProfile(targetUserId);
+      }
+    }
+  }
+
+  function getFollowingCount(userId) {
+    return (state.follows[userId] || []).length;
+  }
+
+  function getFollowersCount(userId) {
+    let count = 0;
+    for (const uId in state.follows) {
+      if (state.follows[uId].includes(userId)) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+
+  /* ===== File handling (in-memory as DataURL) ===== */
+  function fileToDataURL(file){
+    return new Promise((res, rej)=>{
+      const reader = new FileReader();
+      reader.onload = ()=> res({ name:file.name, type:file.type, size:file.size, data:reader.result });
+      reader.onerror = rej;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /* ===== UI Rendering ===== */
+  const mainContent = document.getElementById('main-content');
+  const modalRoot = document.getElementById('modal-root');
+  const navButtons = qA('#nav button');
+  // ATUALIZADO: Navegação
+  navButtons.forEach(b=> b.addEventListener('click', ()=> {
+    qA('#nav button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+
+    // Chamada especial para renderProfile() sem ID
+    if(b.dataset.screen === 'profile') {
+      renderProfile(); // Sem ID = meu perfil
+    } else {
+      route(b.dataset.screen);
+    }
+  }));
+  document.getElementById('open-compose').addEventListener('click', ()=> openComposeModal());
+  document.getElementById('btn-login').addEventListener('click', ()=> openLoginModal());
+  document.getElementById('btn-logout').addEventListener('click', ()=> { clearSession(); toast('Desconectado'); });
+
+  renderSidebarUser();
+  renderSidebarWidgets();
+  route('home'); // Inicia na home
+
+  function renderSidebarUser(){
+    const me = currentUser();
+    document.getElementById('mini-name').textContent = me ? me.name : 'Visitante';
+    document.getElementById('mini-handle').textContent = me ? '@'+me.handle : '@visitante';
+    document.getElementById('mini-avatar').style.background = me && me.avatar ? `url(${me.avatar}) center/cover` : '#111';
+    document.getElementById('btn-login').style.display = me ? 'none' : 'inline-flex';
+    document.getElementById('btn-logout').style.display = me ? 'inline-flex' : 'none';
+    // notif count
+    const unread = state.notifications.filter(n=>n.userId === (me?.id) && !n.read).length;
+    const pill = document.getElementById('notif-pill');
+    if(unread>0){ pill.style.display='inline-block'; pill.textContent = unread; } else pill.style.display='none';
+  }
+
+  // NOVO: Renderiza widgets da sidebar (como "Quem Seguir")
+  function renderSidebarWidgets() {
+    const me = currentUser();
+    const widget = el('#who-to-follow');
+    if (!widget) return;
+
+    // Pega 2 usuários que não sou eu e que eu não sigo
+    const myFollowing = me ? (state.follows[me.id] || []) : [];
+    const suggestions = Object.values(state.users)
+      .filter(u => u.id !== me?.id && !myFollowing.includes(u.id))
+      .slice(0, 3); // Limita a 3 sugestões
+
+    if (suggestions.length === 0) {
+      widget.innerHTML = '<h4>Siga</h4><div class="muted">Nenhuma sugestão</div>';
+      return;
+    }
+
+    widget.innerHTML = '<h4>Siga</h4>' + suggestions.map(u => `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+          <div style="display:flex; gap:8px; align-items:center;">
+             <div class="avatar" style="width:48px; height:48px; ${u.avatar ? `background:url(${u.avatar}) center/cover` : ''}" data-userid="${u.id}"></div>
+             <div>
+               <div class="name" style="font-weight:800" data-userid="${u.id}">${escapeHtml(u.name)}</div>
+               <div class="muted">@${escapeHtml(u.handle)}</div>
+             </div>
+          </div>
+          <button class="icon-btn follow-sample" data-followid="${u.id}">Seguir</button>
+        </div>
+    `).join('');
+
+    // Adiciona listeners
+    widget.querySelectorAll('.follow-sample').forEach(b => {
+      b.addEventListener('click', () => toggleFollow(b.dataset.followid));
+    });
+    widget.querySelectorAll('.avatar, .name').forEach(el => {
+      el.addEventListener('click', () => renderProfile(el.dataset.userid));
+    });
+  }
+
+
+  /* ===== Compose & Feed Rendering ===== */
+  function route(screen){
+    // Gerencia o botão ativo (exceto perfil, que é manual)
+    qA('#nav button').forEach(x=>x.classList.remove('active'));
+    const navBtn = qA('#nav button').find(b => b.dataset.screen === screen);
+    if(navBtn) navBtn.classList.add('active');
+
+    // Roteamento
+    if(screen==='home') return renderHome();
+    if(screen==='explore') return renderExplore();
+    if(screen==='notifications') return renderNotifications();
+    if(screen==='messages') return renderMessages();
+    // if(screen==='profile') return renderProfile(); // Agora é manual
+    if(screen==='settings') return renderSettings();
+    if(screen==='login') return openLoginModal();
+
+    // Fallback
+    qA('#nav button[data-screen="home"]').classList.add('active');
+    renderHome();
+  }
+
+  function renderHome(){
+    el('#center-title').textContent = 'Acontecendo agora';
+    el('#center-subtitle').textContent = 'Feed — MINIX (demo)';
+    mainContent.innerHTML = '';
+
+    // composer area
+    const composer = document.createElement('div'); composer.className='composer';
+    const me = currentUser();
+    const avatarDiv = document.createElement('div'); avatarDiv.className='avatar';
+    avatarDiv.style.background = me && me.avatar ? `url(${me.avatar}) center/cover` : '#111';
+    composer.appendChild(avatarDiv);
+
+    const area = document.createElement('div'); area.className='area';
+    area.innerHTML = `
+    <textarea id="quick-text" placeholder="${me ? 'O que está acontecendo?' : 'Entre para postar...'}" ${me ? '' : 'disabled'}></textarea>
+    <div class="controls">
+      <div class="left">
+        <label class="icon-btn" title="Anexar mídia">
+          <input type="file" id="quick-file" style="display:none" multiple />
+          Anexar
+        </label>
+        <div id="quick-preview" class="file-preview"></div>
+      </div>
+      <div>
+        <button id="quick-post" class="send-btn" ${me ? '' : 'disabled'}>Postar</button>
+      </div>
+    </div>
+  `;
+    composer.appendChild(area);
+    mainContent.appendChild(composer);
+
+    const postsWrap = document.createElement('div'); postsWrap.className='posts'; postsWrap.id='posts-wrap';
+    mainContent.appendChild(postsWrap);
+
+    // events
+    const quickFile = document.getElementById('quick-file');
+    const quickPreview = document.getElementById('quick-preview');
+    let quickFiles = [];
+    quickFile.addEventListener('change', async (e)=>{
+      const files = Array.from(e.target.files || []);
+      for(const f of files){
+        const data = await fileToDataURL(f);
+        quickFiles.push(data);
+      }
+      renderFilePreview(quickPreview, quickFiles, ()=>{ quickFiles=[]; quickPreview.innerHTML=''; quickFile.value=''; });
+    });
+    el('#quick-post')?.addEventListener('click', async ()=>{
+      if(!currentUser()){ openLoginModal(); return; }
+      const text = el('#quick-text').value.trim();
+      if(!text && quickFiles.length===0) { toast('Digite texto ou anexe arquivo'); return; }
+      const p = { id: uid(8), userId: currentUser().id, text, createdAt: now(), editedAt:null, likes:[], reposts:[], attachments:quickFiles.slice(), replyTo:null, quotePostId:null };
+      state.posts.unshift(p); save(state); el('#quick-text').value=''; quickFiles=[]; quickPreview.innerHTML=''; renderPosts(); toast('Post enviado');
+    });
+
+    renderPosts();
+  }
+
+  function renderFilePreview(container, files, onClear){
+    container.innerHTML = '';
+    files.forEach((f, idx)=>{
+      const chip = document.createElement('div'); chip.className='file-chip';
+      chip.innerHTML = `<div style="width:44px;height:44px;border-radius:8px;overflow:hidden;background:#000">${ f.type.startsWith('image/') ? `<img src="${f.data}" style="width:100%;height:100%;object-fit:cover">` : (f.type.startsWith('video/') ? `<video src="${f.data}" style="width:100%;height:100%;object-fit:cover" muted preload="metadata"></video>` : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px">FILE</div>') }</div>
+      <div style="display:flex;flex-direction:column"><strong style="font-size:13px">${f.name}</strong><span class="muted" style="font-size:12px">${Math.round(f.size/1024)} KB</span></div>
+      <button class="icon-btn" data-idx="${idx}" style="padding:6px">Remover</button>`;
+      container.appendChild(chip);
+      chip.querySelector('button')?.addEventListener('click', ()=>{ files.splice(idx,1); renderFilePreview(container, files, onClear); });
+    });
+    if(onClear && files.length > 0){
+      const clear = document.createElement('button'); clear.className='icon-btn'; clear.textContent='Limpar todos'; clear.style.marginLeft='8px';
+      clear.addEventListener('click', ()=> onClear());
+      container.appendChild(clear);
+    }
+  }
+
+  function renderPosts(){
+    const wrap = document.getElementById('posts-wrap');
+    if(!wrap) return;
+    wrap.innerHTML = '';
+
+    // MUDANÇA: Filtra posts que são respostas (comentários)
+    const postsToRender = state.posts.filter(p => !p.replyTo);
+
+    postsToRender.forEach(post=>{
+      const author = state.users[post.userId] || {name:'Desconhecido', handle:'unknown', avatar:null};
+      const p = document.createElement('div'); p.className='post';
+
+      p.innerHTML = `
+      <div class="avatar" style="${author.avatar ? `background:url(${author.avatar}) center/cover` : ''}" data-userid="${post.userId}"></div>
+      <div class="body">
+        <div class="meta">
+          <div>
+            <span class="name" data-userid="${post.userId}">${escapeHtml(author.name)}</span>
+            <span class="handle">@${escapeHtml(author.handle)}</span>
+            <span class="muted">• ${timeAgo(post.createdAt)}</span>
+            ${post.editedAt ? '<span class="edited"> • editado</span>' : ''}
+          </div>
+        </div>
+        <div class="text">${escapeHtml(post.text)}</div>
+
+        <div class="quoted-post-container" id="quote-${post.id}"></div>
+
+        <div class="attachments"></div>
+        <div class="actions"></div>
+      </div>
+    `;
+      // attachments
+      const att = p.querySelector('.attachments');
+      post.attachments.forEach(a=>{
+        if(a.type.startsWith('image/')){
+          const box = document.createElement('div'); box.className='img-thumb'; box.innerHTML = `<img src="${a.data}" alt="${escapeHtml(a.name)}">`;
+          att.appendChild(box);
+        } else if(a.type.startsWith('video/')){
+          const box = document.createElement('div'); box.className='img-thumb'; box.innerHTML = `<video controls src="${a.data}" style="width:100%;height:auto;display:block"></video>`;
+          att.appendChild(box);
+        } else {
+          const box = document.createElement('div'); box.className='file-chip'; box.innerHTML = `<div style="font-weight:700">${escapeHtml(a.name)}</div><div class="muted">${Math.round(a.size/1024)} KB</div>`;
+          att.appendChild(box);
+        }
+      });
+
+      // actions
+      const actions = p.querySelector('.actions');
+      const likeBtn = document.createElement('button'); likeBtn.className='action-btn'; likeBtn.innerHTML = `Curtir <span class="muted">${post.likes.length}</span>`;
+      const repostBtn = document.createElement('button'); repostBtn.className='action-btn'; repostBtn.textContent = 'Repost';
+      const commentBtn = document.createElement('button'); commentBtn.className='action-btn'; commentBtn.textContent = 'Comentar';
+      const moreBtn = document.createElement('button'); moreBtn.className='action-btn'; moreBtn.textContent = 'Ver';
+
+      actions.appendChild(likeBtn);
+      actions.appendChild(repostBtn);
+      actions.appendChild(commentBtn);
+
+      // like
+      likeBtn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        if(!currentUser()){ openLoginModal(); return; }
+        const me = currentUser();
+        const idx = post.likes.indexOf(me.id);
+        if(idx===-1){ post.likes.push(me.id); state.notifications.push({ id:uid(8), userId: post.userId, type:'like', payload:{by:me.id, postId:post.id}, createdAt:now(), read:false }); }
+        else post.likes.splice(idx,1);
+        save(state); renderPosts();
+      });
+
+      // repost
+      repostBtn.addEventListener('click', (e)=> { e.stopPropagation(); openRepostModal(post.id) });
+
+      // comment (open view post modal to reply)
+      commentBtn.addEventListener('click', (e)=> { e.stopPropagation(); openViewPostModal(post.id) });
+
+      // MUDANÇA: Botões de Editar e Deletar (apenas para o dono)
+      if (currentUser() && currentUser().id === post.userId) {
+        const editBtn = document.createElement('button');
+        editBtn.className='action-btn';
+        editBtn.textContent = 'Editar';
+        editBtn.addEventListener('click', (e)=> {
+          e.stopPropagation();
+          openEditPostModal(post.id);
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'action-btn';
+        deleteBtn.textContent = 'Deletar';
+        deleteBtn.style.color = 'var(--danger)';
+        deleteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (confirm('Tem certeza que deseja deletar este post?')) {
+            const idx = state.posts.findIndex(p => p.id === post.id);
+            if (idx > -1) {
+              state.posts.splice(idx, 1);
+              save(state);
+              renderPosts();
+              toast('Post deletado');
+            }
+          }
+        });
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+      }
+
+      // Botão "Ver"
+      moreBtn.addEventListener('click', (e)=> { e.stopPropagation(); openViewPostModal(post.id); });
+      actions.appendChild(moreBtn);
+
+      // MUDANÇA: Botão Seguir
+      const me = currentUser();
+      if (me && post.userId !== me.id) {
+        const followBtn = document.createElement('button');
+        followBtn.className = 'action-btn';
+        const isFollowing = (state.follows[me.id] || []).includes(post.userId);
+        followBtn.textContent = isFollowing ? 'Seguindo' : 'Seguir';
+        followBtn.style.fontWeight = isFollowing ? '700' : '400';
+
+        followBtn.addEventListener('click', (e) => {
+          e.stopPropagation(); // Impede que o modal do post abra
+          toggleFollow(post.userId);
+          renderPosts(); // Re-renderiza para atualizar o botão
+        });
+        actions.prepend(followBtn); // Adiciona o botão no início
+      }
+
+      // MUDANÇA: Click listeners para ver perfil
+      p.querySelector('.avatar').addEventListener('click', (e) => {
+        e.stopPropagation();
+        renderProfile(post.userId);
+      });
+      p.querySelector('.name').addEventListener('click', (e) => {
+        e.stopPropagation();
+        renderProfile(post.userId);
+      });
+
+      // MUDANÇA: Click listener para o post inteiro abrir o "ViewPostModal"
+      p.addEventListener('click', () => openViewPostModal(post.id));
+
+      // MUDANÇA: Verifica e renderiza o Post Aninhado (Quote)
+      if (post.quotePostId) {
+        const quoteContainer = p.querySelector(`#quote-${post.id}`);
+        const originalPost = state.posts.find(op => op.id === post.quotePostId);
+
+        if (originalPost && quoteContainer) {
+          const originalAuthor = state.users[originalPost.userId] || {name:'Desconhecido', handle:'unknown', avatar:null};
+          quoteContainer.innerHTML = `
+          <div class="quoted-post">
+            <div class="meta">
+              <div class="avatar-small" style="${originalAuthor.avatar ? `background-image:url(${originalAuthor.avatar})` : ''}"></div>
+              <strong class="name">${escapeHtml(originalAuthor.name)}</strong>
+              <span class="handle">@${escapeHtml(originalAuthor.handle)}</span>
+              <span class="muted">• ${timeAgo(originalPost.createdAt)}</span>
+            </div>
+            <div class="text">${escapeHtml(originalPost.text)}</div>
+          </div>
+        `;
+        }
+      }
+
+      wrap.appendChild(p);
+    });
+  }
+
+  /* ===== Post Edit / Repost / View modals ===== */
+  function openModal(html){
+    modalRoot.innerHTML = `<div class="modal-backdrop" id="backdrop">${html}</div>`;
+    document.getElementById('backdrop').addEventListener('click', (e)=>{ if(e.target.id==='backdrop') closeModal(); });
+  }
+  function closeModal(){ modalRoot.innerHTML = ''; }
+
+  async function openEditPostModal(postId){
+    const post = state.posts.find(p=>p.id===postId);
+    if(!post) return toast('Post não encontrado');
+    const author = state.users[post.userId] || {};
+    const html = document.createElement('div');
+    html.innerHTML = `<div class="modal" role="dialog">
+    <button class="close" id="modal-close">✕</button>
+    <h3>Editar postagem</h3>
+    <div style="display:flex;gap:12px;margin-top:12px">
+      <div style="width:64px;height:64px;border-radius:999px;background:${author.avatar? `url(${author.avatar}) center/cover`:'#111'}"></div>
+      <div style="flex:1">
+        <textarea id="edit-text">${escapeHtml(post.text)}</textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button id="edit-cancel" class="icon-btn">Cancelar</button>
+          <button id="edit-save" class="send-btn">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+    openModal(html.innerHTML);
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('edit-cancel').addEventListener('click', closeModal);
+    document.getElementById('edit-save').addEventListener('click', ()=> {
+      const txt = document.getElementById('edit-text').value.trim();
+      if(!txt && post.attachments.length === 0) return toast('Texto não pode ficar vazio se não houver anexos');
+      post.text = txt; post.editedAt = now(); save(state); closeModal(); renderHome(); toast('Post atualizado');
+    });
+  }
+
+  function openRepostModal(postId){
+    const post = state.posts.find(p=>p.id===postId);
+    if(!post) return;
+    const author = state.users[post.userId] || {};
+    const html = document.createElement('div');
+    html.innerHTML = `<div class="modal" role="dialog">
+    <button class="close" id="modal-close">✕</button>
+    <h3>Repostar</h3>
+    <div style="display:flex;gap:12px;margin-top:12px">
+      <div style="width:64px;height:64px;border-radius:999px;background:${currentUser()?.avatar ? `url(${currentUser().avatar}) center/cover` : '#111'}"></div>
+      <div style="flex:1">
+        <textarea id="repost-text" placeholder="Adicione um comentário (opcional)"></textarea>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+          <button id="repost-no-comment" class="icon-btn">Repostar sem comentário</button>
+          <button id="repost-with-comment" class="send-btn">Repostar com comentário</button>
+        </div>
+        <div style="margin-top:12px;padding:12px;border-radius:12px;background:rgba(255,255,255,0.01)">
+          <div style="font-weight:800">${escapeHtml(author.name)} <span class="muted">@${escapeHtml(author.handle)}</span></div>
+          <div style="margin-top:6px">${escapeHtml(post.text)}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+    openModal(html.innerHTML);
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('repost-no-comment').addEventListener('click', ()=>{
+      if(!currentUser()){ openLoginModal(); return; }
+      const me = currentUser();
+      post.reposts.push(me.id);
+      // MUDANÇA: Cria um repost com quotePostId mas sem texto (estilo RT)
+      const rp = { id: uid(8), userId: me.id, text: '', createdAt: now(), editedAt:null, likes:[], reposts:[], attachments:[], replyTo:null, quotePostId: post.id };
+      state.posts.unshift(rp);
+      state.notifications.push({ id: uid(8), userId: post.userId, type:'repost', payload:{by:me.id, postId:post.id}, createdAt: now(), read:false });
+      save(state); closeModal(); renderHome(); toast('Repost enviado');
+    });
+    document.getElementById('repost-with-comment').addEventListener('click', ()=>{
+      if(!currentUser()){ openLoginModal(); return; }
+      const txt = document.getElementById('repost-text').value.trim();
+      if(!txt) { toast('Adicione um comentário para este tipo de repost'); return; }
+      const me = currentUser();
+
+      // MUDANÇA: Salva apenas o comentário e a referência
+      const rp = {
+        id: uid(8),
+        userId: me.id,
+        text: txt, // Apenas o comentário
+        createdAt: now(),
+        editedAt:null, likes:[], reposts:[], attachments:[], replyTo:null,
+        quotePostId: post.id // Referência ao post original
+      };
+      post.reposts.push(me.id);
+      state.posts.unshift(rp);
+
+      state.notifications.push({ id: uid(8), userId: post.userId, type:'repost', payload:{by:me.id, postId:post.id}, createdAt: now(), read:false });
+      save(state); closeModal(); renderHome(); toast('Repost com comentário enviado');
+    });
+  }
+
+  function openViewPostModal(postId){
+    const post = state.posts.find(p=>p.id===postId);
+    if(!post) return toast('Post não encontrado');
+    const author = state.users[post.userId] || {};
+    const html = document.createElement('div');
+    html.innerHTML = `<div class="modal" role="dialog">
+    <button class="close" id="modal-close">✕</button>
+    <div style="display:flex;gap:12px">
+      <div style="width:72px;height:72px;border-radius:999px;background:${author.avatar ? `url(${author.avatar}) center/cover` : '#111'}"></div>
+      <div style="flex:1">
+        <div style="font-weight:900;font-size:18px">${escapeHtml(author.name)} <span class="muted">@${escapeHtml(author.handle)} • ${timeAgo(post.createdAt)}</span></div>
+        <div style="margin-top:12px;white-space:pre-wrap">${escapeHtml(post.text)}</div>
+        <div style="margin-top:12px" id="view-attachments"></div>
+
+        <div class="quoted-post-container" id="modal-quote-${post.id}" style="margin-top:12px;"></div>
+
+        <div style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.03);padding-top:12px">
+          <h4>Respostas</h4>
+          <div id="replies-list" style="max-height:220px;overflow:auto"></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input id="reply-input" placeholder="Responder..." />
+            <button id="reply-send" class="send-btn">Responder</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+    openModal(html.innerHTML);
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    // attachments
+    const va = document.getElementById('view-attachments');
+    post.attachments.forEach(a=>{
+      if(a.type.startsWith('image/')) va.innerHTML += `<div class="img-thumb"><img src="${a.data}"></div>`;
+      else if(a.type.startsWith('video/')) va.innerHTML += `<div class="img-thumb"><video controls src="${a.data}"></video></div>`;
+      else va.innerHTML += `<div class="file-chip">${escapeHtml(a.name)}</div>`;
+    });
+
+    // Renderiza o Quote Post no modal
+    if (post.quotePostId) {
+      const quoteContainer = el(`#modal-quote-${post.id}`);
+      const originalPost = state.posts.find(op => op.id === post.quotePostId);
+      if (originalPost && quoteContainer) {
+        const originalAuthor = state.users[originalPost.userId] || {name:'Desconhecido', handle:'unknown', avatar:null};
+        quoteContainer.innerHTML = `
+          <div class="quoted-post">
+            <div class="meta">
+              <div class="avatar-small" style="${originalAuthor.avatar ? `background-image:url(${originalAuthor.avatar})` : ''}"></div>
+              <strong class="name">${escapeHtml(originalAuthor.name)}</strong>
+              <span class="handle">@${escapeHtml(originalAuthor.handle)}</span>
+            </div>
+            <div class="text">${escapeHtml(originalPost.text)}</div>
+          </div>
+        `;
+      }
+    }
+
+    // replies
+    function refreshReplies(){
+      const replies = state.posts.filter(p=>p.replyTo===post.id).sort((a,b)=>a.createdAt.localeCompare(b.createdAt));
+      const list = document.getElementById('replies-list');
+      list.innerHTML = replies.map(r=> {
+        const u = state.users[r.userId] || {name:'Desconhecido', handle:'unknown'};
+        return `<div style="padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);margin-bottom:8px"><div style="font-weight:800">${escapeHtml(u.name)} <span class="muted">@${escapeHtml(u.handle)}</span></div><div style="margin-top:6px">${escapeHtml(r.text)}</div></div>`;
+      }).join('') || '<div class="muted">Sem respostas</div>';
+    }
+    refreshReplies();
+
+    document.getElementById('reply-send').addEventListener('click', ()=>{
+      if(!currentUser()){ openLoginModal(); return; }
+      const txt = document.getElementById('reply-input').value.trim();
+      if(!txt) return toast('Escreva algo');
+      const rp = { id: uid(8), userId: currentUser().id, text: txt, createdAt: now(), editedAt:null, likes:[], reposts:[], attachments:[], replyTo: post.id, quotePostId: null };
+      state.posts.unshift(rp);
+      save(state);
+      document.getElementById('reply-input').value='';
+      refreshReplies();
+      // renderHome(); // Não renderiza mais o home, pois respostas não aparecem lá
+      toast('Resposta enviada');
+    });
+  }
+
+  /* ===== Login / Signup Modal & Profile Edit ===== */
+  function openLoginModal(){
+    const html = document.createElement('div');
+    html.innerHTML = `<div class="modal" role="dialog" style="width:440px">
+    <button class="close" id="modal-close">✕</button>
+    <h3>Entrar no MINIX</h3>
+    <div style="display:grid;gap:8px;margin-top:12px">
+      <input id="login-usr" placeholder="E-mail ou @handle" />
+      <input id="login-pass" type="password" placeholder="Senha" />
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
+        <button id="open-signup" class="icon-btn">Criar conta</button>
+        <button id="do-login" class="send-btn">Entrar</button>
+      </div>
+    </div>
+  </div>`;
+    openModal(html.innerHTML);
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('do-login').addEventListener('click', ()=>{
+      const usr = document.getElementById('login-usr').value.trim();
+      const pw = document.getElementById('login-pass').value;
+      if(!usr || !pw) return toast('Preencha ambos');
+      const r = loginWith(usr, pw);
+      if(!r.ok) return toast(r.msg);
+      toast('Bem-vindo, ' + r.user.name);
+      closeModal();
+      renderSidebarUser();
+      renderSidebarWidgets();
+      renderHome();
+    });
+    document.getElementById('open-signup').addEventListener('click', ()=> openSignupModal());
+  }
+
+  function openSignupModal(){
+    const html = document.createElement('div');
+    html.innerHTML = `<div class="modal" role="dialog" style="width:440px">
+    <button class="close" id="modal-close">✕</button>
+    <h3>Criar conta MINIX</h3>
+    <div style="display:grid;gap:8px;margin-top:12px">
+      <input id="s-name" placeholder="Nome" />
+      <input id="s-email" placeholder="E-mail" />
+      <input id="s-handle" placeholder="Handle (sem @)" />
+      <input id="s-pass" type="password" placeholder="Senha" />
+      <div style="display:flex;gap:8px;justify-content:flex-end; margin-top:12px;">
+        <button id="s-cancel" class="icon-btn">Cancelar</button>
+        <button id="s-create" class="send-btn">Criar</button>
+      </div>
+    </div>
+  </div>`;
+    openModal(html.innerHTML);
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('s-cancel').addEventListener('click', closeModal);
+    document.getElementById('s-create').addEventListener('click', ()=>{
+      const name = document.getElementById('s-name').value.trim();
+      const email = document.getElementById('s-email').value.trim().toLowerCase();
+      const handle = document.getElementById('s-handle').value.trim().replace(/^@/,'');
+      const pass = document.getElementById('s-pass').value;
+      if(!name || !email || !handle || !pass) return toast('Preencha todos os campos');
+      const r = signup({ name, email, handle, pass });
+      if(!r.ok) return toast(r.msg);
+      toast('Conta criada: ' + r.user.name);
+      closeModal();
+      renderSidebarUser();
+      renderSidebarWidgets();
+      renderHome();
+    });
+  }
+
+  /* ===== Profile View / Edit ===== */
+  // MUDANÇA: Aceita userId, renderiza perfil próprio ou de outros
+  function renderProfile(userId){
+    const me = currentUser(); // Quem EU sou
+    const profileId = userId || me?.id; // Quem estou VENDO
+
+    // Gerencia o botão de navegação ativo
+    qA('#nav button').forEach(x=>x.classList.remove('active'));
+    if (me && profileId === me.id) {
+      qA('#nav button[data-screen="profile"]').classList.add('active');
+    }
+
+    if(!profileId){
+      el('#center-title').textContent = 'Perfil';
+      el('#center-subtitle').textContent = 'Visitante';
+      mainContent.innerHTML = '<div class="muted">Faça login para ver seu perfil ou clique em um usuário.</div>';
+      if(!me) openLoginModal();
+      return;
+    }
+
+    const user = state.users[profileId]; // O usuário do perfil
+    if(!user){
+      el('#center-title').textContent = 'Erro';
+      el('#center-subtitle').textContent = 'Não encontrado';
+      mainContent.innerHTML = '<div class="muted">Usuário não encontrado.</div>';
+      return;
+    }
+
+    const isMe = me && user.id === me.id; // Estou vendo meu próprio perfil?
+
+    el('#center-title').textContent = user.name;
+    el('#center-subtitle').textContent = `@${user.handle}`;
+    mainContent.innerHTML = '';
+    const wrap = document.createElement('div');
+
+    // Gerar HTML dos botões
+    let buttonsHTML = '';
+    if (isMe) {
+      buttonsHTML = `
+        <button id="upload-avatar" class="icon-btn">Alterar avatar</button>
+        <button id="upload-banner" class="icon-btn">Alterar banner</button>
+        <button id="edit-profile" class="send-btn" style="margin-left: 8px;">Editar perfil</button>
+      `;
+    } else if (me) { // Estou logado E vendo o perfil de outro
+      const isFollowing = (state.follows[me.id] || []).includes(user.id);
+      buttonsHTML = `<button id="profile-follow-btn" class="send-btn">${isFollowing ? 'Seguindo' : 'Seguir'}</button>`;
+    } else {
+      // Não estou logado e vendo o perfil de outro
+      buttonsHTML = `<button id="profile-follow-btn" class="send-btn">Seguir</button>`; // Vai abrir o login
+    }
+
+    // Nova estrutura de HTML
+    wrap.innerHTML = `
+    <div class="profile-header">
+      <div class="profile-banner" style="${user.banner ? `background-image:url(${user.banner})` : 'background-color:#334;'}"></div>
+      <div class="profile-avatar-row">
+        <div class="profile-avatar" style="${user.avatar ? `background-image:url(${user.avatar})` : ''}"></div>
+        <div>${buttonsHTML}</div>
+      </div>
+      <div class="profile-info" data-userid="${user.id}">
+        <div style="font-weight:900;font-size:22px">${escapeHtml(user.name)}</div>
+        <div class="muted">@${escapeHtml(user.handle)}</div>
+        <div style="margin-top:8px">${escapeHtml(user.bio||'')}</div>
+        <div class="profile-stats">
+          <div><strong id="following-count">0</strong> Seguindo</div>
+          <div><strong id="followers-count">0</strong> Seguidores</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <h4>Posts de ${escapeHtml(user.name)}</h4>
+      <div id="profile-posts" style="margin-top:12px; display:flex; flex-direction:column; gap:12px;"></div>
+    </div>
+  `;
+    mainContent.appendChild(wrap);
+
+    // Popula a contagem
+    document.getElementById('following-count').textContent = getFollowingCount(user.id);
+    document.getElementById('followers-count').textContent = getFollowersCount(user.id);
+
+    // Eventos (condicionais)
+    if (isMe) {
+      document.getElementById('edit-profile').addEventListener('click', ()=> openEditProfileModal());
+      document.getElementById('upload-avatar').addEventListener('click', ()=> {
+        const inp = document.createElement('input'); inp.type='file'; inp.accept='image/*';
+        inp.onchange = async ()=> {
+          const f = inp.files[0]; if(!f) return;
+          const d = await fileToDataURL(f); user.avatar = d.data; save(state); renderSidebarUser(); renderProfile(user.id); toast('Avatar atualizado');
+        };
+        inp.click();
+      });
+      document.getElementById('upload-banner').addEventListener('click', ()=> {
+        const inp = document.createElement('input'); inp.type='file'; inp.accept='image/*';
+        inp.onchange = async ()=> {
+          const f = inp.files[0]; if(!f) return;
+          const d = await fileToDataURL(f); user.banner = d.data; save(state); renderProfile(user.id); toast('Banner atualizado');
+        };
+        inp.click();
+      });
+    } else {
+      document.getElementById('profile-follow-btn').addEventListener('click', () => {
+        if (!currentUser()) { openLoginModal(); return; }
+        toggleFollow(user.id);
+        renderProfile(user.id); // Re-renderiza para atualizar o botão
+      });
+    }
+
+    // Carrega os posts do usuário (incluindo replies)
+    const profilePosts = document.getElementById('profile-posts');
+    // MUDANÇA: Mostra todos os posts, incluindo replies, no perfil
+    profilePosts.innerHTML = state.posts
+      .filter(p=>p.userId===user.id)
+      .sort((a,b)=>b.createdAt.localeCompare(a.createdAt)) // Mais novos primeiro
+      .map(p=> {
+        let postHTML = `<div class="post" style="align-items:flex-start" onclick="openViewPostModal('${p.id}')">
+        <div class="avatar" style="${user.avatar ? `background:url(${user.avatar}) center/cover`:''}"></div>
+        <div style="flex:1">
+          <div style="font-weight:800">${escapeHtml(user.name)} <span class="muted">@${escapeHtml(user.handle)} • ${timeAgo(p.createdAt)}</span></div>
+          ${p.replyTo ? `<div class="muted" style="font-size:14px">Respondendo a...</div>` : ''}
+          <div style="margin-top:6px">${escapeHtml(p.text)}</div>`;
+
+        // Adiciona quote-post se existir
+        if (p.quotePostId) {
+          const originalPost = state.posts.find(op => op.id === p.quotePostId);
+          if (originalPost) {
+            const originalAuthor = state.users[originalPost.userId] || {name:'Desconhecido', handle:'unknown', avatar:null};
+            postHTML += `
+                <div class="quoted-post">
+                  <div class="meta">
+                    <div class="avatar-small" style="${originalAuthor.avatar ? `background-image:url(${originalAuthor.avatar})` : ''}"></div>
+                    <strong class="name">${escapeHtml(originalAuthor.name)}</strong>
+                    <span class="handle">@${escapeHtml(originalAuthor.handle)}</span>
+                  </div>
+                  <div class="text">${escapeHtml(originalPost.text)}</div>
+                </div>
+              `;
+          }
+        }
+        postHTML += `</div></div>`;
+        return postHTML;
+      }).join('') || '<div class="muted">Nenhum post</div>';
+  }
+
+
+  function openEditProfileModal(){
+    const me = currentUser();
+    if(!me) return;
+    const html = document.createElement('div');
+    html.innerHTML = `<div class="modal" role="dialog">
+    <button class="close" id="modal-close">✕</button>
+    <h3>Editar perfil</h3>
+    <div style="display:grid;gap:8px;margin-top:12px">
+      <input id="pf-name" value="${escapeHtml(me.name)}" placeholder="Nome" />
+      <input id="pf-handle" value="${escapeHtml(me.handle)}" placeholder="Handle" />
+      <input id="pf-bio" value="${escapeHtml(me.bio||'')}" placeholder="Bio" />
+      <div style="display:flex;justify-content:flex-end;gap:8px; margin-top:12px;">
+        <button id="pf-cancel" class="icon-btn">Cancelar</button>
+        <button id="pf-save" class="send-btn">Salvar</button>
+      </div>
+    </div>
+  </div>`;
+    openModal(html.innerHTML);
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('pf-cancel').addEventListener('click', closeModal);
+    document.getElementById('pf-save').addEventListener('click', ()=>{
+      const n = document.getElementById('pf-name').value.trim();
+      const h = document.getElementById('pf-handle').value.trim().replace(/^@/,'');
+      const b = document.getElementById('pf-bio').value.trim();
+      if(!n || !h) return toast('Nome e handle obrigatórios');
+      if(Object.values(state.users).find(u=>u.handle===h && u.id !== me.id)) return toast('Handle já em uso');
+      me.name = n; me.handle = h; me.bio = b; save(state); renderSidebarUser(); renderProfile(); toast('Perfil salvo'); closeModal();
+    });
+  }
+
+  /* ===== Notifications / Messages / Explore / Settings ===== */
+  function renderNotifications(){
+    el('#center-title').textContent = 'Notificações';
+    el('#center-subtitle').textContent = 'Suas atualizações';
+    const me = currentUser();
+    if(!me){ mainContent.innerHTML = '<div class="muted">Faça login para ver notificações</div>'; return; }
+    mainContent.innerHTML = '<div id="notif-list" style="display:flex; flex-direction:column; gap:12px;"></div>';
+    const list = document.getElementById('notif-list');
+    const mine = state.notifications.filter(n=>n.userId===me.id).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+    list.innerHTML = mine.map(n=>{
+      const by = state.users[n.payload?.by] || {name:'Alguém', handle:'unknown'};
+      if(n.type==='like') return `<div class="post"><div style="font-weight:800">${escapeHtml(by.name)}</div><div class="muted">curtiu seu post • ${timeAgo(n.createdAt)}</div></div>`;
+      if(n.type==='repost') return `<div class="post"><div style="font-weight:800">${escapeHtml(by.name)}</div><div class="muted">repostou • ${timeAgo(n.createdAt)}</div></div>`;
+      if(n.type==='follow') return `<div class="post"><div style="font-weight:800">${escapeHtml(by.name)}</div><div class="muted">começou a seguir você • ${timeAgo(n.createdAt)}</div></div>`;
+      return `<div class="post">Notificação • ${JSON.stringify(n)}</div>`;
+    }).join('') || '<div class="muted">Nenhuma notificação</div>';
+    // mark read
+    mine.forEach(n=>n.read=true); save(state);
+    renderSidebarUser();
+  }
+
+  function renderExplore(){
+    el('#center-title').textContent = 'Explorar';
+    el('#center-subtitle').textContent = 'Posts populares';
+    mainContent.innerHTML = '<div class="muted">Mostrando posts mais populares</div><div id="exp-list" style="margin-top:12px; display:flex; flex-direction:column; gap:12px;"></div>';
+    const container = document.getElementById('exp-list');
+    const sorted = state.posts.slice()
+      .filter(p => !p.replyTo) // Também esconde respostas aqui
+      .sort((a,b)=> (b.likes.length + b.reposts.length) - (a.likes.length + a.reposts.length));
+
+    container.innerHTML = sorted.map(p=> {
+      const u = state.users[p.userId] || {};
+      return `<div class="post" onclick="openViewPostModal('${p.id}')">
+        <div class="avatar" style="${u.avatar? `background:url(${u.avatar}) center/cover` : ''}"></div>
+        <div style="flex:1">
+          <div style="font-weight:800">${escapeHtml(u.name)} <span class="muted">@${escapeHtml(u.handle)}</span></div>
+          <div style="margin-top:8px">${escapeHtml(p.text)}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderMessages(){
+    el('#center-title').textContent = 'Mensagens';
+    el('#center-subtitle').textContent = 'Suas conversas';
+    const me = currentUser();
+    if(!me){ mainContent.innerHTML = '<div class="muted">Faça login para ver mensagens</div>'; return; }
+    mainContent.innerHTML = '<h3>Mensagens</h3><div style="display:flex;gap:12px"><div style="width:320px"><div id="threads"></div></div><div style="flex:1"><div id="thread-area" class="muted">Selecione uma conversa</div></div></div>';
+    const threadsEl = document.getElementById('threads');
+    // collect partners
+    const partners = {};
+    state.messages.forEach(m=>{ if(m.from===me.id) partners[m.to]=true; if(m.to===me.id) partners[m.from]=true; });
+    threadsEl.innerHTML = Object.keys(partners).map(pid=>{
+      const u = state.users[pid] || {name:'Desconhecido', handle:'unknown'};
+      const last = state.messages.filter(m=> (m.from===me.id && m.to===pid) || (m.from===pid && m.to===me.id)).slice(-1)[0];
+      return `<div class="post" data-id="${pid}" style="cursor:pointer"><div style="font-weight:800">${escapeHtml(u.name)}</div><div class="muted">${escapeHtml(last?.text?.slice(0,60)||'Sem mensagens')}</div></div>`;
+    }).join('') || '<div class="muted">Sem conversas</div>';
+    qA('#threads .post').forEach(item=> item.addEventListener('click', ()=> openMessageThread(item.dataset.id)));
+    // new message button
+    const newBtn = document.createElement('button'); newBtn.className='send-btn'; newBtn.textContent='Nova mensagem'; newBtn.style.marginTop='10px'; threadsEl.appendChild(newBtn);
+    newBtn.addEventListener('click', ()=> openNewMessageModal());
+  }
+
+  function openMessageThread(pid){
+    const me = currentUser();
+    const user = state.users[pid] || {name:'Desconhecido', handle:'unknown'};
+    const area = document.getElementById('thread-area');
+    const msgs = state.messages.filter(m=> (m.from===me.id && m.to===pid) || (m.from===pid && m.to===me.id)).sort((a,b)=>a.createdAt.localeCompare(b.createdAt));
+    area.innerHTML = `<h4>${escapeHtml(user.name)} <span class="muted">@${escapeHtml(user.handle)}</span></h4><div style="max-height:420px;overflow:auto;margin-top:8px">${msgs.map(m=> `<div style="padding:8px;border-radius:8px;background:${m.from===me.id? 'linear-gradient(90deg,var(--accent),var(--accent-2))' : 'rgba(255,255,255,0.02)'};color:${m.from===me.id? '#001': 'var(--text)'};margin-bottom:8px">${escapeHtml(m.text)}<div class="muted" style="font-size:12px;margin-top:6px">${timeAgo(m.createdAt)}</div></div>`).join('')}</div>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <input id="msg-input" placeholder="Escreva..." />
+    <button id="msg-send" class="send-btn">Enviar</button>
+  </div>`;
+    document.getElementById('msg-send').addEventListener('click', ()=> {
+      const text = document.getElementById('msg-input').value.trim(); if(!text) return;
+      state.messages.push({ id: uid(8), from: currentUser().id, to: pid, text, createdAt: now(), read:false });
+      save(state); openMessageThread(pid);
+    });
+  }
+
+  function openNewMessageModal(){
+    const html = document.createElement('div');
+    html.innerHTML = `<div class="modal" role="dialog" style="width:440px;">
+    <button class="close" id="modal-close">✕</button>
+    <h3>Nova mensagem</h3>
+    <div style="display:grid;gap:8px;margin-top:12px">
+      <input id="msg-to" placeholder="Para @handle" />
+      <input id="msg-text" placeholder="Mensagem" />
+      <div style="display:flex;justify-content:flex-end;gap:8px; margin-top:12px;"><button id="msg-send-btn" class="send-btn">Enviar</button></div>
+    </div>
+  </div>`;
+    openModal(html.innerHTML);
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('msg-send-btn').addEventListener('click', ()=>{
+      const to = document.getElementById('msg-to').value.trim().replace(/^@/,'');
+      const text = document.getElementById('msg-text').value.trim();
+      if(!to || !text) return toast('Preencha destinatário e mensagem');
+      const user = Object.values(state.users).find(u=>u.handle===to);
+      if(!user) return toast('Usuário não encontrado');
+      state.messages.push({ id: uid(8), from: currentUser().id, to: user.id, text, createdAt: now(), read:false });
+      save(state); closeModal(); toast('Mensagem enviada');
+      route('messages');
+      openMessageThread(user.id);
+    });
+  }
+
+  function renderSettings(){
+    el('#center-title').textContent = 'Configurações';
+    el('#center-subtitle').textContent = 'Sua conta';
+    const me = currentUser();
+    if(!me){ mainContent.innerHTML = '<div class="muted">Faça login para ver configurações</div>'; return; }
+    mainContent.innerHTML = `
+    <div style="display:grid;gap:8px;margin-top:12px; max-width: 320px;">
+      <button id="download-data" class="icon-btn">Baixar meus dados</button>
+      <button id="deactivate" class="icon-btn" style="color: var(--danger); border-color: var(--danger);">Desativar conta</button>
+    </div>`;
+    document.getElementById('download-data').addEventListener('click', ()=> {
+      const blob = new Blob([JSON.stringify(state.users[me.id], null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download=`minix-${me.handle}.json`; a.click(); URL.revokeObjectURL(url);
+    });
+    document.getElementById('deactivate').addEventListener('click', ()=> {
+      if(!confirm('Desativar conta? Isso é permanente e irá deletar seus dados.')) return;
+      delete state.users[me.id];
+      state.posts = state.posts.filter(p=>p.userId!==me.id);
+      delete state.follows[me.id];
+      // ... (deletar outras coisas)
+      save(state);
+      clearSession();
+      toast('Conta desativada');
+    });
+  }
+
+  /* ===== Utility modals used earlier ===== */
+  function openComposeModal(){
+    if(!currentUser()){ openLoginModal(); return; }
+    const html = document.createElement('div');
+    html.innerHTML = `<div class="modal" role="dialog">
+    <button class="close" id="modal-close">✕</button>
+    <h3>Novo post</h3>
+    <div style="display:flex;gap:12px;margin-top:12px">
+      <div style="width:64px;height:64px;border-radius:999px;background:${currentUser().avatar? `url(${currentUser().avatar}) center/cover`:'#111'}"></div>
+      <div style="flex:1">
+        <textarea id="modal-text" placeholder="O que está acontecendo?"></textarea>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <label class="icon-btn">Anexar<input type="file" id="modal-file" multiple style="display:none"></label>
+          <div id="modal-preview" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+          <div style="margin-left:auto"><button id="modal-cancel" class="icon-btn">Cancelar</button><button id="modal-send" class="send-btn">Postar</button></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+    openModal(html.innerHTML);
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    let files = [];
+    document.getElementById('modal-file').addEventListener('change', async (e)=> {
+      const fs = Array.from(e.target.files || []);
+      for(const f of fs){ files.push(await fileToDataURL(f)); }
+      renderFilePreview(document.getElementById('modal-preview'), files, ()=>{ files=[]; document.getElementById('modal-preview').innerHTML=''; document.getElementById('modal-file').value=''; });
+    });
+    document.getElementById('modal-cancel').addEventListener('click', closeModal);
+    document.getElementById('modal-send').addEventListener('click', ()=> {
+      const txt = document.getElementById('modal-text').value.trim();
+      if(!txt && files.length===0) return toast('Texto ou anexo obrigatório');
+      const p = { id: uid(8), userId: currentUser().id, text: txt, createdAt: now(), editedAt:null, likes:[], reposts:[], attachments:files.slice(), replyTo:null, quotePostId:null };
+      state.posts.unshift(p); save(state); closeModal(); renderHome(); toast('Post criado');
+    });
+  }
+
+  /* ===== Init Search (right widget) ===== */
+  document.getElementById('search-box').addEventListener('input', (e)=>{
+    const q = e.target.value.trim().toLowerCase();
+
+    // Se limpar a busca, volta pra home
+    if(!q) {
+      route('home');
+      return;
+    }
+
+    // simple search: show matching posts or users
+    const results = state.posts.filter(p=> p.text.toLowerCase().includes(q) || (state.users[p.userId]?.handle||'').toLowerCase().includes(q));
+
+    el('#center-title').textContent = `Busca por "${escapeHtml(q)}"`;
+    el('#center-subtitle').textContent = 'Resultados';
+    mainContent.innerHTML = `<div id="search-results" style="margin-top:12px; display:flex; flex-direction:column; gap:12px;"></div>`;
+
+    document.getElementById('search-results').innerHTML = results.map(r=> {
+      const u = state.users[r.userId]||{};
+      return `<div class="post" onclick="openViewPostModal('${r.id}')">
+        <div class="avatar" style="${u.avatar? `background:url(${u.avatar}) center/cover` : ''}"></div>
+        <div style="flex:1">
+          <div style="font-weight:800">${escapeHtml(u.name)} <span class="muted">@${escapeHtml(u.handle)}</span></div>
+          <div style="margin-top:8px">${escapeHtml(r.text)}</div>
+        </div>
+      </div>`;
+    }).join('') || '<div class="muted">Nenhum resultado</div>';
+  });
+
+  /* ===== Expose for debugging/testing ===== */
+  window.MINIX = { state, save: ()=>save(state), loginAs: (h)=>{ const u = Object.values(state.users).find(x=>x.handle===h); if(!u) return; setSession(uid(10), u.id); } };
+
+</script>
+</body>
+</html>
