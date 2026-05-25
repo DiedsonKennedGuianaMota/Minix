@@ -1,394 +1,260 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Missão Tech: 6º Ano</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+    <title>Pitch Deck - AlgoritmoLab</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-deep: #050112;
-            --neon-blue: #00d2ff;
-            --neon-purple: #9d50bb;
-            --neon-pink: #ff007f;
-            --neon-green: #39ff14;
-            --yellow: #f9d423;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #38bdf8;
+            --accent: #818cf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            background-color: var(--bg-deep);
-            color: white;
-            font-family: 'Poppins', sans-serif;
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
         }
 
-        /* Moldura da Apresentação */
-        #presentation-root {
-            width: 1280px;
-            height: 720px;
-            background: linear-gradient(160deg, #0b0124 0%, #1a0242 100%);
+        /* Container da Apresentação */
+        .deck-container {
+            flex: 1;
             position: relative;
-            border: 4px solid var(--neon-blue);
-            border-radius: 15px;
-            box-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            transform-origin: center center;
+            perspective: 1000px;
         }
 
+        /* Estilo Base dos Slides */
         .slide {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            padding: 50px 80px;
-            display: none;
-            flex-direction: column;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            animation: slideIn 0.5s ease-out;
+            flex-direction: column;
+            padding: 5%;
+            opacity: 0;
+            transform: scale(0.9) translateX(50px);
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            visibility: hidden;
+            z-index: 1;
         }
 
-        .slide.active { display: flex; }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(50px); }
-            to { opacity: 1; transform: translateX(0); }
+        .slide.active {
+            opacity: 1;
+            transform: scale(1) translateX(0);
+            visibility: visible;
+            z-index: 10;
         }
 
-        /* Títulos e Textos */
-        h1 { font-family: 'Bungee', cursive; font-size: 70px; color: var(--neon-blue); text-align: center; line-height: 1; margin-bottom: 20px; }
-        h2 { font-family: 'Bungee', cursive; font-size: 45px; color: var(--yellow); margin-bottom: 30px; display: flex; align-items: center; gap: 20px; }
-        h2 i { color: var(--neon-pink); }
+        .slide.prev { transform: scale(0.9) translateX(-50px); }
+
+        /* Conteúdo dos Slides */
+        .slide-content {
+            background: var(--card-bg);
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            max-width: 1000px;
+            width: 100%;
+            position: relative;
+        }
+
+        h1 { font-size: 3.5rem; background: linear-gradient(to right, var(--primary), var(--accent)); -webkit-background-clip: text; color: transparent; margin-bottom: 20px; }
+        h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; display: inline-block;}
+        p, li { font-size: 1.2rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 15px; }
+        ul { margin-left: 20px; }
         
-        p { font-size: 28px; line-height: 1.4; color: #e0e0e0; margin-bottom: 20px; }
-        strong { color: var(--neon-green); }
+        .icon-huge { font-size: 4rem; color: var(--primary); margin-bottom: 20px; display: block; }
 
-        /* Layouts de Grid */
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-top: 20px; }
-        .info-card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px;
-            border-radius: 20px;
-            border: 2px solid var(--neon-purple);
-            text-align: center;
+        /* Dica do Pitch (Explicando o Tópico) */
+        .pitch-tip {
+            margin-top: 30px;
+            padding: 15px 20px;
+            background: rgba(129, 140, 248, 0.1);
+            border-left: 4px solid var(--accent);
+            border-radius: 0 12px 12px 0;
+            font-size: 0.95rem;
+            color: #c7d2fe;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            animation: pulseBg 3s infinite alternate;
+        }
+        @keyframes pulseBg { 0% { background: rgba(129, 140, 248, 0.05); } 100% { background: rgba(129, 140, 248, 0.15); } }
+
+        /* Controles de Navegação */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 10px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-nav {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            cursor: pointer;
             transition: 0.3s;
         }
-        .info-card:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.1); }
-        .info-card i { font-size: 60px; color: var(--neon-blue); margin-bottom: 15px; }
-        .info-card h3 { font-size: 24px; margin-bottom: 10px; color: var(--yellow); }
+        .btn-nav:hover { color: var(--primary); transform: scale(1.2); }
+        .btn-nav:disabled { color: #475569; cursor: not-allowed; transform: none; }
 
-        /* Estilo Código */
-        .code-box {
-            background: #000;
-            padding: 25px;
-            border-radius: 15px;
-            font-family: monospace;
-            font-size: 24px;
-            color: #0f0;
-            border: 1px solid #333;
-            box-shadow: inset 0 0 10px #0f0;
-        }
+        .progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(to right, var(--primary), var(--accent)); width: 0%; transition: width 0.3s; z-index: 100; }
 
-        /* Quiz */
-        .quiz-container { background: rgba(0,0,0,0.4); padding: 40px; border-radius: 25px; border: 2px dashed var(--neon-blue); }
-        .opt {
-            background: rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.2);
-            padding: 15px 30px;
-            border-radius: 15px;
-            margin: 15px 0;
-            cursor: pointer;
-            font-size: 24px;
-            color: white;
-            transition: 0.2s;
-            width: 100%;
-            text-align: left;
-        }
-        .opt:hover { background: var(--neon-purple); border-color: white; }
-        .feedback { font-size: 28px; font-weight: 800; text-align: center; margin-top: 20px; min-height: 40px; }
-
-        /* Controles */
-        .ui-layer {
-            position: fixed;
-            bottom: 20px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            z-index: 1000;
-        }
-        .btn {
-            background: var(--neon-blue);
-            color: black;
-            border: none;
-            padding: 15px 30px;
-            font-family: 'Bungee', cursive;
-            font-size: 18px;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
-        }
-        .btn-pink { background: var(--neon-pink); color: white; box-shadow: 0 0 15px rgba(255, 0, 127, 0.5); }
-        .fullscreen-btn { position: fixed; top: 20px; right: 20px; padding: 10px; opacity: 0.5; }
-        .fullscreen-btn:hover { opacity: 1; }
-
-        /* Background Animado */
-        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.3; animation: blink 3s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+        /* Grids e Layouts Específicos */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .metric-box { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .metric-box h3 { font-size: 2rem; color: var(--accent); }
     </style>
 </head>
 <body>
 
-    <button class="btn fullscreen-btn" onclick="toggleFullscreen()">
-        <i class="fa-solid fa-expand"></i> TELA CHEIA (F11)
-    </button>
+    <div class="progress-bar" id="progress"></div>
 
-    <div id="presentation-root">
+    <div class="deck-container">
+        
         <div class="slide active">
-            <h1>Missão Digital:<br>Robôs e Código</h1>
-            <p style="text-align: center; font-size: 32px;">Bem-vindos à sua primeira aventura na robótica!</p>
-            <div style="text-align: center; margin-top: 40px;">
-                <i class="fa-solid fa-robot" style="font-size: 150px; color: var(--neon-blue);"></i>
+            <div class="slide-content" style="text-align: center;">
+                <i class="fas fa-code icon-huge" style="font-size: 6rem;"></i>
+                <h1>AlgoritmoLab</h1>
+                <p style="font-size: 1.8rem; color: var(--text-main);">Revolucionando o ensino de C através da gamificação e prática sem atritos.</p>
+                
+                            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="fas fa-exclamation-triangle"></i> O Problema</h2>
+                <div class="grid-2">
+                    <div>
+                        <ul>
+                            <li><strong>Alto Atrito Inicial:</strong> Alunos iniciantes na maioria dos casos entram na faculdade sem um conhecimento inicial de lógica de programação</li>
+                            <li><strong>Frustração:</strong> Erros de sintaxe e dependências quebram o engajamento e geram altas taxas de evasão (desistência).</li>
+                        </ul>
+                    </div>
+                    <div style="text-align: center; opacity: 0.5;">
+                        <i class="fas fa-user-injured" style="font-size: 10rem;"></i>
+                    </div>
+                </div>
+                
+                
             </div>
         </div>
 
         <div class="slide">
-            <h2><i class="fa-solid fa-question"></i> O que é um Robô?</h2>
-            <p>Um robô não é apenas uma máquina de metal. Ele é um dispositivo que:</p>
-            <div class="grid-3">
-                <div class="info-card"><i class="fa-solid fa-eye"></i><h3>Sente</h3><p>Usa sensores</p></div>
-                <div class="info-card"><i class="fa-solid fa-brain"></i><h3>Pensa</h3><p>Usa algoritmos</p></div>
-                <div class="info-card"><i class="fa-solid fa-hand-fist"></i><h3>Age</h3><p>Faz movimentos</p></div>
+            <div class="slide-content">
+                <h2><i class="fas fa-check-circle"></i> A Solução: AlgoritmoLab</h2>
+                <p>Uma plataforma estática, 100% web, que roda código C localmente no navegador do aluno. Zero configuração.</p>
+                <div class="grid-2" style="margin-top: 20px;">
+                    <div class="metric-box">
+                        <i class="fas fa-rocket icon-huge" style="margin-bottom: 10px; font-size: 2rem;"></i>
+                        <p style="color: white; margin:0;">Zero Dependência de Servidor</p>
+                    </div>
+                    <div class="metric-box">
+                        <i class="fas fa-gamepad icon-huge" style="margin-bottom: 10px; font-size: 2rem;"></i>
+                        <p style="color: white; margin:0;">Gamificação (Streaks, Notas)</p>
+                    </div>
+                </div>
+                
+                
             </div>
         </div>
 
         <div class="slide">
-            <h2><i class="fa-solid fa-list-ol"></i> O que é Algoritmo?</h2>
-            <p>É uma <strong>receita de bolo</strong> para o computador.</p>
-            <p>Os computadores são super rápidos, mas eles não sabem fazer nada sem um <strong>passo a passo</strong> detalhado!</p>
-            <div class="info-card" style="text-align: left;">
-                <p>1. Abra a porta do armário.<br>2. Pegue o cereal.<br>3. Coloque na tigela.</p>
-            </div>
+            <div class="slide-content">
+                <h2><i class="fas fa-laptop-code"></i> O Produto</h2>
+                <ul>
+                    <li><strong>IDE Embutida:</strong> Editor com syntax highlighting usando CodeMirror diretamente na página.</li>
+                    <li><strong>Corretor Automático Inteligente:</strong> Validação de lógica e sintaxe por JavaScript, dando feedback instantâneo.</li>
+                    <li><strong>Trilhas de Avaliação:</strong> Testes objetivos cronometrados unidos a desafios práticos de código.</li>
+                </ul>
+                
+                         </div>
         </div>
 
-        <div class="slide">
-            <h2><i class="fa-solid fa-shoe-prints"></i> Ordem Importa!</h2>
-            <p>Tente calçar os sapatos antes de colocar as meias. <strong>Dá certo? Não!</strong></p>
-            <p>Na programação, se você inverter os passos, o robô trava ou faz bobagem.</p>
-            <div style="text-align: center;"><i class="fa-solid fa-sync fa-spin" style="font-size: 80px; color: var(--neon-pink);"></i></div>
-        </div>
+   
 
-        <div class="slide">
-            <h2><i class="fa-solid fa-brain"></i> Lógica de Programação</h2>
-            <p>É como ensinamos o robô a tomar decisões usando o <strong>SE</strong>:</p>
-            <div class="info-card">
-                <p style="font-size: 35px;"><strong>SE</strong> estiver chovendo ➔ <strong>PEGUE</strong> guarda-chuva.</p>
-                <p style="font-size: 35px;"><strong>SENÃO</strong> ➔ <strong>VÁ</strong> de camiseta.</p>
-            </div>
-        </div>
+       
 
-        <div class="slide">
-            <h2><i class="fa-solid fa-microchip"></i> Linguagem de Código</h2>
-            <p>Os computadores só entendem eletricidade: <strong>Ligado (1)</strong> ou <strong>Desligado (0)</strong>.</p>
-            <p>Como é difícil falar assim, usamos as linguagens de programação como tradutores mágicos!</p>
-            <div style="font-size: 50px; text-align: center; letter-spacing: 10px; color: var(--neon-green);">01011001 01000001</div>
-        </div>
-
-        <div class="slide">
-            <h2><i class="fa-solid fa-file-code"></i> Nosso Tradutor: C++</h2>
-            <p>No Arduino, usamos uma linguagem chamada C++. Ela usa palavras em inglês que o computador transforma em comandos.</p>
-            <div class="code-box">
-                digitalWrite(13, HIGH); // "Ei Arduino, ligue a luz!"
-            </div>
-        </div>
-
-        <div class="slide">
-            <h2><i class="fa-solid fa-hdd"></i> O Arduino Uno</h2>
-            <p>Imagine o Arduino como o <strong>Cérebro</strong> de um brinquedo inteligente.</p>
-            <p>Ele é uma placa verde cheia de caminhos elétricos onde conectamos sensores e luzes.</p>
-            <div style="text-align: center;"><i class="fa-solid fa-memory" style="font-size: 100px; color: var(--neon-blue);"></i></div>
-        </div>
-
-        <div class="slide">
-            <h2><i class="fa-solid fa-diagram-project"></i> As Partes Dele</h2>
-            <div class="grid-3">
-                <div class="info-card"><h3>Porta USB</h3><p>Cabo que traz o código do PC.</p></div>
-                <div class="info-card"><h3>Chip</h3><p>Onde o código fica guardado.</p></div>
-                <div class="info-card"><h3>Pinos</h3><p>Onde espetamos os fios.</p></div>
-            </div>
-        </div>
-
-        <div class="slide">
-            <h2><i class="fa-solid fa-toggle-on"></i> Entradas e Saídas</h2>
-            <p>O robô interage com o mundo de duas formas:</p>
-            <div class="grid-3">
-                <div class="info-card" style="border-color: var(--neon-blue);"><h3>ENTRADA</h3><p>Botões, sensores de luz e som.</p></div>
-                <div class="info-card" style="border-color: var(--neon-pink);"><h3>SAÍDA</h3><p>LEDs, motores e buzinas.</p></div>
-            </div>
-        </div>
-
-        <div class="slide">
-            <h2><i class="fa-solid fa-table-cells"></i> Protoboard</h2>
-            <p>É o nosso "tabuleiro de ensaios". Ela serve para ligarmos os componentes sem precisar de cola ou solda.</p>
-            <p>É cheia de furinhos conectados por baixo que levam a eletricidade.</p>
-        </div>
-
-        <div class="slide">
-            <h2><i class="fa-solid fa-lightbulb"></i> O LED</h2>
-            <p>É uma lâmpada pequenininha. Mas cuidado! Ele tem lado certo: a perna maior é a <strong>positiva (+)</strong>.</p>
-            <p>Se ligar invertido, ele não acende. Se ligar direto na bateria forte, ele queima!</p>
-        </div>
-
-        <div class="slide">
-            <h2><i class="fa-solid fa-shield-halved"></i> O Resistor</h2>
-            <p>Ele é o <strong>guarda-costas</strong> do LED. Ele segura o excesso de energia para o LED não explodir.</p>
-            <div style="text-align: center;"><i class="fa-solid fa-battery-half" style="font-size: 80px; color: var(--yellow);"></i></div>
-        </div>
-
-        <div class="slide">
-            <h2><i class="fa-solid fa-laptop-code"></i> O Ciclo da Criação</h2>
-            <p>1. Escrevemos o código no computador.<br>2. Conectamos o cabo USB.<br>3. Apertamos "Enviar".<br>4. O Arduino começa a trabalhar!</p>
-        </div>
-
-        <div class="slide">
-            <h2><i class="fa-solid fa-rotate"></i> O Loop Infinito</h2>
-            <p>No Arduino, existe um comando chamado <strong>LOOP</strong>. Tudo que você coloca ali dentro se repete para sempre, enquanto houver pilha!</p>
-            <p>É assim que fazemos um LED piscar sem parar.</p>
-        </div>
-
-        <div class="slide">
-            <h2><i class="fa-solid fa-gamepad"></i> Quiz: O Arduino</h2>
-            <div class="quiz-container">
-                <p>O que é o Arduino na robótica?</p>
-                <button class="opt" onclick="check(this, true, 'Correto! Ele controla tudo.')">A) O Cérebro que comanda as peças</button>
-                <button class="opt" onclick="check(this, false, 'Não... A bateria que dá a força.')">B) Uma bateria potente</button>
-                <button class="opt" onclick="check(this, false, 'Erro! Ele é físico, dá pra tocar.') )">C) Um programa de celular</button>
-                <div class="feedback" id="f1"></div>
-            </div>
-        </div>
-
-        <div class="slide">
-            <h2><i class="fa-solid fa-gamepad"></i> Quiz: Algoritmo</h2>
-            <div class="quiz-container">
-                <p>O que acontece se um passo do algoritmo estiver errado?</p>
-                <button class="opt" onclick="check(this, false, 'Quem dera! Ele só faz o que mandamos.')">A) O robô conserta sozinho</button>
-                <button class="opt" onclick="check(this, true, 'Isso! O robô faz a tarefa errada ou trava.')">B) O robô faz a tarefa errada</button>
-                <div class="feedback" id="f2"></div>
-            </div>
-        </div>
-
-        <div class="slide">
-            <h1>Missão Cumprida!</h1>
-            <p style="text-align: center;">Parabéns, Programador! Você está pronto para o próximo nível.</p>
-            <div style="text-align: center; margin-top: 50px;">
-                <i class="fa-solid fa-trophy" style="font-size: 150px; color: var(--yellow);"></i>
-            </div>
-            <button class="btn" style="display: block; margin: 40px auto;" onclick="goToSlide(0)">RECOMEÇAR</button>
-        </div>
+  
 
     </div>
 
-    <div class="ui-layer">
-        <button class="btn btn-pink" onclick="changeSlide(-1)">VOLTAR</button>
-        <button class="btn" onclick="changeSlide(1)">AVANÇAR</button>
+    <div class="controls">
+        <button class="btn-nav" id="btn-prev" onclick="changeSlide(-1)" disabled><i class="fas fa-chevron-left"></i></button>
+        <span id="slide-counter" style="line-height: 1.5rem; font-weight: bold; color: var(--text-muted); align-self: center;">1 / 7</span>
+        <button class="btn-nav" id="btn-next" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
     </div>
 
     <script>
-        let currentSlide = 0;
+        let currentSlideIndex = 0;
         const slides = document.querySelectorAll('.slide');
-        const root = document.getElementById('presentation-root');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const counter = document.getElementById('slide-counter');
+        const progress = document.getElementById('progress');
 
-        // Criar estrelinhas no fundo
-        for (let i = 0; i < 50; i++) {
-            let star = document.createElement('div');
-            star.className = 'star';
-            star.style.width = star.style.height = Math.random() * 3 + 'px';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.animationDelay = Math.random() * 5 + 's';
-            document.body.appendChild(star);
-        }
-
-        // Função de Escala para caber em qualquer tela
-        function autoScale() {
-            const width = 1280;
-            const height = 720;
-            const windowWidth = window.innerWidth;
-            const windowHeight = window.innerHeight;
-            const scale = Math.min(windowWidth / width, windowHeight / height);
-            root.style.transform = `scale(${scale * 0.95})`;
-        }
-
-        window.addEventListener('resize', autoScale);
-        autoScale();
-
-        // Navegação
-        function changeSlide(n) {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + n + slides.length) % slides.length;
-            slides[currentSlide].classList.add('active');
-            clearFeedbacks();
-        }
-
-        function goToSlide(n) {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = n;
-            slides[currentSlide].classList.add('active');
-            clearFeedbacks();
-        }
-
-        // Tela Cheia Oficial
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
+        function updateDeck() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active', 'prev');
+                if (index === currentSlideIndex) {
+                    slide.classList.add('active');
+                } else if (index < currentSlideIndex) {
+                    slide.classList.add('prev');
                 }
-            }
-        }
-
-        // Sistema de Quiz
-        function check(btn, isCorrect, msg) {
-            const feedback = btn.parentElement.querySelector('.feedback');
-            const opts = btn.parentElement.querySelectorAll('.opt');
-            
-            opts.forEach(o => {
-                o.style.background = "rgba(255,255,255,0.1)";
-                o.style.borderColor = "rgba(255,255,255,0.2)";
             });
 
-            if (isCorrect) {
-                btn.style.background = "var(--neon-green)";
-                btn.style.color = "black";
-                feedback.innerHTML = "✅ " + msg;
-                feedback.style.color = "var(--neon-green)";
-            } else {
-                btn.style.background = "var(--neon-pink)";
-                feedback.innerHTML = "❌ " + msg;
-                feedback.style.color = "var(--neon-pink)";
+            // Atualiza Botões
+            btnPrev.disabled = currentSlideIndex === 0;
+            btnNext.disabled = currentSlideIndex === slides.length - 1;
+
+            // Atualiza Contadores e Progresso
+            counter.innerText = `${currentSlideIndex + 1} / ${slides.length}`;
+            progress.style.width = `${((currentSlideIndex + 1) / slides.length) * 100}%`;
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            if (currentSlideIndex < 0) currentSlideIndex = 0;
+            if (currentSlideIndex >= slides.length) currentSlideIndex = slides.length - 1;
+            updateDeck();
+        }
+
+        // Navegação pelo Teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
             }
-        }
-
-        function clearFeedbacks() {
-            document.querySelectorAll('.feedback').forEach(f => f.innerHTML = "");
-            document.querySelectorAll('.opt').forEach(o => {
-                o.style.background = "rgba(255,255,255,0.1)";
-                o.style.color = "white";
-            });
-        }
-
-        // Teclado
-        window.addEventListener('keydown', (e) => {
-            if (e.key === "ArrowRight") changeSlide(1);
-            if (e.key === "ArrowLeft") changeSlide(-1);
         });
+
+        // Init
+        updateDeck();
     </script>
 </body>
 </html>
