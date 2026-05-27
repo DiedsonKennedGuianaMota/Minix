@@ -81,22 +81,6 @@
         
         .icon-huge { font-size: 4rem; color: var(--primary); margin-bottom: 20px; display: block; }
 
-        /* Dica do Pitch (Explicando o Tópico) */
-        .pitch-tip {
-            margin-top: 30px;
-            padding: 15px 20px;
-            background: rgba(129, 140, 248, 0.1);
-            border-left: 4px solid var(--accent);
-            border-radius: 0 12px 12px 0;
-            font-size: 0.95rem;
-            color: #c7d2fe;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            animation: pulseBg 3s infinite alternate;
-        }
-        @keyframes pulseBg { 0% { background: rgba(129, 140, 248, 0.05); } 100% { background: rgba(129, 140, 248, 0.15); } }
-
         /* Controles de Navegação */
         .controls {
             position: fixed;
@@ -126,9 +110,11 @@
         .progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(to right, var(--primary), var(--accent)); width: 0%; transition: width 0.3s; z-index: 100; }
 
         /* Grids e Layouts Específicos */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .metric-box { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .metric-box h3 { font-size: 2rem; color: var(--accent); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .metric-box { background: rgba(0,0,0,0.2); padding: 25px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .metric-box h3 { font-size: 1.5rem; color: var(--accent); margin-bottom: 10px; }
+        .metric-box i { font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -141,9 +127,53 @@
             <div class="slide-content" style="text-align: center;">
                 <i class="fas fa-code icon-huge" style="font-size: 6rem;"></i>
                 <h1>AlgoritmoLab</h1>
-                <p style="font-size: 1.8rem; color: var(--text-main);">Revolucionando o ensino de C através da gamificação e prática sem atritos.</p>
-                
-                            </div>
+                <p style="font-size: 1.8rem; color: var(--text-main);">Revolucionando o ensino de C no Ensino Superior.</p>
+                <p style="margin-top: 20px;">Prática sem atritos, avaliação automatizada e gamificação.</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="fas fa-bullseye"></i> Nossos Objetivos</h2>
+                <div class="grid-3" style="margin-top: 30px;">
+                    <div class="metric-box">
+                        <i class="fas fa-rocket"></i>
+                        <h3>Fricção Zero</h3>
+                        <p style="font-size: 1rem;">Eliminar o tempo perdido instalando compiladores pesados.</p>
+                    </div>
+                    <div class="metric-box">
+                        <i class="fas fa-brain"></i>
+                        <h3>Foco na Lógica</h3>
+                        <p style="font-size: 1rem;">Permitir que o aluno foque no raciocínio, não na configuração.</p>
+                    </div>
+                    <div class="metric-box">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Reter Alunos</h3>
+                        <p style="font-size: 1rem;">Reduzir a evasão inicial nos cursos de tecnologia.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-content">
+                <h2><i class="fas fa-users"></i> Público-Alvo</h2>
+                <p>Projetado sob medida para universitários ingressantes (1º e 2º semestre) sem conhecimento prévio em programação, focando em:</p>
+                <div class="grid-3" style="margin-top: 20px;">
+                    <div class="metric-box" style="text-align: left; padding: 20px;">
+                        <h3 style="font-size: 1.2rem;"><i class="fas fa-sitemap" style="font-size: 1.2rem; margin-right: 10px;"></i> Sistemas de Informação</h3>
+                        <p style="font-size: 0.95rem;">Construção de base estruturada para o desenvolvimento de sistemas corporativos.</p>
+                    </div>
+                    <div class="metric-box" style="text-align: left; padding: 20px;">
+                        <h3 style="font-size: 1.2rem;"><i class="fas fa-chalkboard-teacher" style="font-size: 1.2rem; margin-right: 10px;"></i> Licenciatura em Comp.</h3>
+                        <p style="font-size: 0.95rem;">Referência de ferramenta pedagógica moderna para futuros educadores.</p>
+                    </div>
+                    <div class="metric-box" style="text-align: left; padding: 20px;">
+                        <h3 style="font-size: 1.2rem;"><i class="fas fa-microchip" style="font-size: 1.2rem; margin-right: 10px;"></i> Eng. de Computação</h3>
+                        <p style="font-size: 0.95rem;">Entendimento essencial da linguagem C para futura aplicação em hardware.</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="slide">
@@ -152,61 +182,63 @@
                 <div class="grid-2">
                     <div>
                         <ul>
-                            <li><strong>Alto Atrito Inicial:</strong> Alunos iniciantes na maioria dos casos entram na faculdade sem um conhecimento inicial de lógica de programação</li>
-                            <li><strong>Frustração:</strong> Erros de sintaxe e dependências quebram o engajamento e geram altas taxas de evasão (desistência).</li>
+                            <li><strong>Barreira Técnica:</strong> Alunos entram na faculdade precisando configurar compiladores complexos (GCC) e IDEs pesadas antes mesmo de programar.</li>
+                            <li><strong>Sobrecarga Docente:</strong> Professores perdem semanas resolvendo problemas de instalação nos laboratórios.</li>
+                            <li><strong>Evasão:</strong> A frustração inicial gera desistência em massa logo nas primeiras semanas do curso.</li>
                         </ul>
                     </div>
-                    <div style="text-align: center; opacity: 0.5;">
-                        <i class="fas fa-user-injured" style="font-size: 10rem;"></i>
+                    <div style="text-align: center;">
+                        <i class="fas fa-user-injured" style="font-size: 10rem; color: #475569;"></i>
                     </div>
                 </div>
-                
-                
             </div>
         </div>
 
         <div class="slide">
             <div class="slide-content">
-                <h2><i class="fas fa-check-circle"></i> A Solução: AlgoritmoLab</h2>
-                <p>Uma plataforma estática, 100% web, que roda código C localmente no navegador do aluno. Zero configuração.</p>
-                <div class="grid-2" style="margin-top: 20px;">
+                <h2><i class="fas fa-check-circle"></i> A Solução</h2>
+                <p>Uma plataforma <strong>100% Web e Estática</strong>, baseada no modelo Construcionista, onde a prática acontece diretamente no navegador.</p>
+                <div class="grid-2" style="margin-top: 30px;">
                     <div class="metric-box">
-                        <i class="fas fa-rocket icon-huge" style="margin-bottom: 10px; font-size: 2rem;"></i>
-                        <p style="color: white; margin:0;">Zero Dependência de Servidor</p>
+                        <i class="fas fa-server icon-huge" style="margin-bottom: 10px; font-size: 3rem;"></i>
+                        <h3 style="color: white; margin:0;">Zero Dependência</h3>
+                        <p style="font-size: 1rem; margin-top: 10px;">Todo o código é validado no <i>Client-Side</i>. Não há custo com servidores pesados.</p>
                     </div>
                     <div class="metric-box">
-                        <i class="fas fa-gamepad icon-huge" style="margin-bottom: 10px; font-size: 2rem;"></i>
-                        <p style="color: white; margin:0;">Gamificação (Streaks, Notas)</p>
+                        <i class="fas fa-gamepad icon-huge" style="margin-bottom: 10px; font-size: 3rem;"></i>
+                        <h3 style="color: white; margin:0;">Gamificação</h3>
+                        <p style="font-size: 1rem; margin-top: 10px;">Sistema de ofensivas diárias (Streaks) e certificados para reter a atenção do aluno.</p>
                     </div>
                 </div>
-                
-                
             </div>
         </div>
 
         <div class="slide">
             <div class="slide-content">
-                <h2><i class="fas fa-laptop-code"></i> O Produto</h2>
-                <ul>
-                    <li><strong>IDE Embutida:</strong> Editor com syntax highlighting usando CodeMirror diretamente na página.</li>
-                    <li><strong>Corretor Automático Inteligente:</strong> Validação de lógica e sintaxe por JavaScript, dando feedback instantâneo.</li>
-                    <li><strong>Trilhas de Avaliação:</strong> Testes objetivos cronometrados unidos a desafios práticos de código.</li>
-                </ul>
-                
-                         </div>
+                <h2><i class="fas fa-laptop-code"></i> A Plataforma</h2>
+                <div class="grid-2">
+                    <div>
+                        <ul>
+                            <li><strong>IDE Embutida:</strong> Editor profissional (CodeMirror) integrado com syntax highlighting de C.</li>
+                            <li><strong>Feedback Inteligente:</strong> Corretor automático focado em orientar pedagogicamente, e não apenas exibir "Erros Fatais".</li>
+                            <li><strong>Progressão Local:</strong> Dados e métricas salvos no dispositivo do aluno, garantindo privacidade e velocidade.</li>
+                            <li><strong>Avaliações Somativas:</strong> Provas cronometradas com cálculo automático de notas.</li>
+                        </ul>
+                    </div>
+                    <div style="text-align: center; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                        <i class="fas fa-file-code" style="font-size: 4rem; color: var(--accent); margin-bottom: 15px;"></i>
+                        <h3 style="color: white;">Foco no Código</h3>
+                        <p style="font-size: 0.9rem;">Prática desde o Dia 1.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-
-   
-
-       
-
-  
 
     </div>
 
     <div class="controls">
         <button class="btn-nav" id="btn-prev" onclick="changeSlide(-1)" disabled><i class="fas fa-chevron-left"></i></button>
-        <span id="slide-counter" style="line-height: 1.5rem; font-weight: bold; color: var(--text-muted); align-self: center;">1 / 7</span>
+        <span id="slide-counter" style="line-height: 1.5rem; font-weight: bold; color: var(--text-muted); align-self: center;">1 / 6</span>
         <button class="btn-nav" id="btn-next" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
     </div>
 
